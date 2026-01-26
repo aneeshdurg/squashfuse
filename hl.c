@@ -62,13 +62,13 @@ static sqfs_err sqfs_hl_lookup(sqfs **fs, sqfs_inode *inode,
 }
 
 
-static void sqfs_hl_op_destroy(void *user_data) {
+void sqfs_hl_op_destroy(void *user_data) {
 	sqfs_hl *hl = (sqfs_hl*)user_data;
 	sqfs_destroy(&hl->fs);
 	free(hl);
 }
 
-static void *sqfs_hl_op_init(struct fuse_conn_info *conn
+void *sqfs_hl_op_init(struct fuse_conn_info *conn
 #if FUSE_USE_VERSION >= 30
 			     ,struct fuse_config *cfg
 #endif
@@ -80,7 +80,7 @@ static void *sqfs_hl_op_init(struct fuse_conn_info *conn
 	return hl;
 }
 
-static int sqfs_hl_op_getattr(const char *path, struct stat *st
+int sqfs_hl_op_getattr(const char *path, struct stat *st
 #if FUSE_USE_VERSION >= 30
 			      , struct fuse_file_info *fi
 #endif
@@ -96,7 +96,7 @@ static int sqfs_hl_op_getattr(const char *path, struct stat *st
 	return 0;
 }
 
-static int sqfs_hl_op_opendir(const char *path, struct fuse_file_info *fi) {
+int sqfs_hl_op_opendir(const char *path, struct fuse_file_info *fi) {
 	sqfs *fs;
 	sqfs_inode *inode;
 	
@@ -118,14 +118,14 @@ static int sqfs_hl_op_opendir(const char *path, struct fuse_file_info *fi) {
 	return 0;
 }
 
-static int sqfs_hl_op_releasedir(const char *path,
+int sqfs_hl_op_releasedir(const char *path,
 		struct fuse_file_info *fi) {
 	free((sqfs_inode*)(intptr_t)fi->fh);
 	fi->fh = 0;
 	return 0;
 }
 
-static int sqfs_hl_op_readdir(const char *path, void *buf,
+int sqfs_hl_op_readdir(const char *path, void *buf,
 		fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi
 #if FUSE_USE_VERSION >= 30
 	,enum fuse_readdir_flags flags
@@ -192,7 +192,7 @@ static int sqfs_hl_op_readdir(const char *path, void *buf,
 	return 0;
 }
 
-static int sqfs_hl_op_open(const char *path, struct fuse_file_info *fi) {
+int sqfs_hl_op_open(const char *path, struct fuse_file_info *fi) {
 	sqfs *fs;
 	sqfs_inode *inode;
 	
@@ -218,17 +218,17 @@ static int sqfs_hl_op_open(const char *path, struct fuse_file_info *fi) {
 	return 0;
 }
 
-static int sqfs_hl_op_create(const char* unused_path, mode_t unused_mode,
+int sqfs_hl_op_create(const char* unused_path, mode_t unused_mode,
 		struct fuse_file_info *unused_fi) {
 	return -EROFS;
 }
-static int sqfs_hl_op_release(const char *path, struct fuse_file_info *fi) {
+int sqfs_hl_op_release(const char *path, struct fuse_file_info *fi) {
 	free((sqfs_inode*)(intptr_t)fi->fh);
 	fi->fh = 0;
 	return 0;
 }
 
-static int sqfs_hl_op_read(const char *path, char *buf, size_t size,
+int sqfs_hl_op_read(const char *path, char *buf, size_t size,
 		off_t off, struct fuse_file_info *fi) {
 	sqfs *fs;
 	sqfs_hl_lookup(&fs, NULL, NULL);
@@ -240,7 +240,7 @@ static int sqfs_hl_op_read(const char *path, char *buf, size_t size,
 	return osize;
 }
 
-static int sqfs_hl_op_readlink(const char *path, char *buf, size_t size) {
+int sqfs_hl_op_readlink(const char *path, char *buf, size_t size) {
 	sqfs *fs;
 	sqfs_inode inode;
 	if (sqfs_hl_lookup(&fs, &inode, path))
@@ -254,7 +254,7 @@ static int sqfs_hl_op_readlink(const char *path, char *buf, size_t size) {
 	return 0;
 }
 
-static int sqfs_hl_op_listxattr(const char *path, char *buf, size_t size) {
+int sqfs_hl_op_listxattr(const char *path, char *buf, size_t size) {
 	sqfs *fs;
 	sqfs_inode inode;
 	int ferr;
@@ -268,7 +268,7 @@ static int sqfs_hl_op_listxattr(const char *path, char *buf, size_t size) {
 	return size;
 }
 
-static int sqfs_hl_op_getxattr(const char *path, const char *name,
+int sqfs_hl_op_getxattr(const char *path, const char *name,
 		char *value, size_t size
 #ifdef FUSE_XATTR_POSITION
 		, uint32_t position
@@ -295,13 +295,13 @@ static int sqfs_hl_op_getxattr(const char *path, const char *name,
 	return real;
 }
 
-static int sqfs_hl_op_statfs(const char *path, struct statvfs *st) {
+int sqfs_hl_op_statfs(const char *path, struct statvfs *st) {
 	sqfs_hl *hl = fuse_get_context()->private_data;
 	return sqfs_statfs(&hl->fs, st);
 }
 
 
-static sqfs_hl *sqfs_hl_open(const char *path, size_t offset, const char *subdir) {
+sqfs_hl *sqfs_hl_open(const char *path, size_t offset, const char *subdir) {
 	sqfs_hl *hl;
 	
 	hl = malloc(sizeof(*hl));
