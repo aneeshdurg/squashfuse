@@ -43,6 +43,9 @@
 # define FRAG_CACHED_BLKS 3
 #endif
 
+# define DATA_CACHED_BLKS 1
+# define FRAG_CACHED_BLKS 3
+
 void sqfs_version_supported(int *min_major, int *min_minor, int *max_major,
 		int *max_minor) {
 	*min_major = *max_major = SQUASHFS_MAJOR;
