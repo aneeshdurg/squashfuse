@@ -1,3 +1,5 @@
+./autogen.sh
+./configure
 make clean
 make CFLAGS="-fPIC"
 # Produce squashfuse-hl.so from built objects
